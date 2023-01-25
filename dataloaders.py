@@ -8,6 +8,10 @@ import SimpleITK as sitk
 
 import torch
 import torch.utils as utils
+import pandas as pd
+from skimage import io
+import cv2
+
 
 def collate_to_list_unsupervised(batch):
     sources = [item[0].view(item[0].size(0), item[0].size(1)) for item in batch]
@@ -24,19 +28,27 @@ def collate_to_list_segmentation(batch):
 class UnsupervisedLoader(utils.data.Dataset):
     def __init__(self, data_path, transforms=None, randomly_swap=False):
         self.data_path = data_path
-        self.all_ids = os.listdir(self.data_path)
+        self.table = pd.read_csv(data_path)
+        #self.all_ids = os.listdir(self.data_path)
         self.transforms = transforms
         self.randomly_swap = randomly_swap
 
     def __len__(self):
-        return len(self.all_ids)
+        return self.table.shape[0]
 
     def __getitem__(self, idx):
-        case_id = self.all_ids[idx]
-        source_path = os.path.join(self.data_path, str(case_id), "source.mha")
-        target_path = os.path.join(self.data_path, str(case_id), "target.mha")
-        source = sitk.GetArrayFromImage(sitk.ReadImage(source_path))
-        target = sitk.GetArrayFromImage(sitk.ReadImage(target_path))
+        row = self.table.iloc[idx]
+        source_image = row['source_image']
+        source_mask = row['source_mask']
+        target_image = row['target_image']
+        target_mask = row['target_mask']
+        source = io.imread(source_image, as_gray=True).astype(np.float32)/255.
+        target = io.imread(target_image, as_gray=True).astype(np.float32)/255.
+        #case_id = self.all_ids[idx]
+        #source_path = os.path.join(self.data_path, str(case_id), "source.mha")
+        #target_path = os.path.join(self.data_path, str(case_id), "target.mha")
+        #source = sitk.GetArrayFromImage(sitk.ReadImage(source_path))
+        #target = sitk.GetArrayFromImage(sitk.ReadImage(target_path))
 
         if self.transforms is not None:
             source, target, _ = self.transforms(source, target)
@@ -46,9 +58,39 @@ class UnsupervisedLoader(utils.data.Dataset):
                 pass
             else:
                 source, target = target, source
-
+        source = cv2.resize(source, (512, 512))
+        target = cv2.resize(target, (512, 512))
         source_tensor, target_tensor = torch.from_numpy(source.astype(np.float32)), torch.from_numpy(target.astype(np.float32))
         return source_tensor, target_tensor
+
+#class UnsupervisedLoader(utils.data.Dataset):
+#    def __init__(self, data_path, transforms=None, randomly_swap=False):
+#        self.data_path = data_path
+#        self.all_ids = os.listdir(self.data_path)
+#        self.transforms = transforms
+#        self.randomly_swap = randomly_swap
+#
+#    def __len__(self):
+#        return len(self.all_ids)
+#
+#    def __getitem__(self, idx):
+#        case_id = self.all_ids[idx]
+#        source_path = os.path.join(self.data_path, str(case_id), "source.mha")
+#        target_path = os.path.join(self.data_path, str(case_id), "target.mha")
+#        source = sitk.GetArrayFromImage(sitk.ReadImage(source_path))
+#        target = sitk.GetArrayFromImage(sitk.ReadImage(target_path))
+#
+#        if self.transforms is not None:
+#            source, target, _ = self.transforms(source, target)
+#
+#        if self.randomly_swap:
+#            if random.random() > 0.5:
+#                pass
+#            else:
+#                source, target = target, source
+#
+#        source_tensor, target_tensor = torch.from_numpy(source.astype(np.float32)), torch.from_numpy(target.astype(np.float32))
+#        return source_tensor, target_tensor
 
 class SegmentationLoader(utils.data.Dataset):
     def __init__(self, data_path):

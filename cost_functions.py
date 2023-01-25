@@ -25,6 +25,34 @@ def ncc_global(sources, targets, device="cpu", **params):
     ncc = (1/size)*torch.sum((sources - sources_mean)*(targets-targets_mean) / (sources_std * targets_std), dim=(1, 2, 3))
     return ncc
 
+def ncc_local(source, target, device='cpu', **params):
+    ndims = 2
+    win = [params['window_size']] * ndims
+    sum_filt = torch.ones([1, 1, *win])
+    if device.type == 'cuda':
+        sum_filt = sum_filt.cuda()
+    pad_no =  math.floor(win[0]/2)
+    padding = (pad_no, pad_no)
+    stride = (pad_no, pad_no)
+    s = source.clone().unsqueeze(0).unsqueeze(0)
+    t = target.clone().unsqueeze(0).unsqueeze(0)
+    s2 = s * s
+    t2 = t * t
+    st = s * t
+    s_sum = F.conv2d(s, sum_filt, stride=stride, padding=padding)
+    t_sum = F.conv2d(t, sum_filt, stride=stride, padding=padding)
+    s2_sum = F.conv2d(s2, sum_filt, stride=stride, padding=padding)
+    t2_sum = F.conv2d(t2, sum_filt, stride=stride, padding=padding)
+    st_sum = F.conv2d(st, sum_filt, stride=stride, padding=padding)
+    win_size = np.prod(win)
+    u_s = s_sum/win_size
+    u_t = t_sum/win_size
+    cross = st_sum- u_t * s_sum - u_s * t_sum + u_s * u_t * win_size
+    s_var = s2_sum - 2 * u_s * s_sum + u_s * u_s * win_size
+    t_var = t2_sum - 2 * u_t * t_sum + u_t * u_t * win_size
+    cc = cross * cross / (s_var * t_var + 1e-5)
+    return -torch.mean(cc)
+
 def curvature_regularization(displacement_fields, device="cpu"):
     u_x = displacement_fields[:, 0, :, :].view(-1, 1, displacement_fields.size(2), displacement_fields.size(3))
     u_y = displacement_fields[:, 1, :, :].view(-1, 1, displacement_fields.size(2), displacement_fields.size(3))

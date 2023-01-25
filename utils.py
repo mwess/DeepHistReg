@@ -159,6 +159,33 @@ def numpy_inv_transform(transform):
     inverted_transform = np.linalg.inv(total_transform)
     return inverted_transform[0:2, :]
 
+#def load_pair(case_id, dataset_path, load_masks=False):
+#    base_path = os.path.join(dataset_path, str(case_id))
+#    source_path = os.path.join(base_path, "source.mha")
+#    target_path = os.path.join(base_path, "target.mha")
+#    if load_masks:
+#        source_mask_path = os.path.join(base_path, "source_mask.mha")
+#        target_mask_path = os.path.join(base_path, "target_mask.mha")
+#    source_landmarks_path = os.path.join(base_path, "source_landmarks.csv")
+#    target_landmarks_path = os.path.join(base_path, "target_landmarks.csv")
+#
+#    source = sitk.GetArrayFromImage(sitk.ReadImage(source_path))
+#    target = sitk.GetArrayFromImage(sitk.ReadImage(target_path))
+#    if load_masks:
+#        source_mask = sitk.GetArrayFromImage(sitk.ReadImage(source_mask_path))
+#        target_mask = sitk.GetArrayFromImage(sitk.ReadImage(target_mask_path))
+#    source_landmarks = pd.read_csv(source_landmarks_path).to_numpy()[:, 1:]
+#    try:
+#        status = "training"
+#        target_landmarks = pd.read_csv(target_landmarks_path).to_numpy()[:, 1:]
+#    except:
+#        status = "evaluation"
+#        target_landmarks = None
+#    if load_masks:
+#        return source, target, source_landmarks, target_landmarks, status, source_mask, target_mask
+#    else:
+#        return source, target, source_landmarks, target_landmarks, status,
+
 def load_pair(case_id, dataset_path, load_masks=False):
     base_path = os.path.join(dataset_path, str(case_id))
     source_path = os.path.join(base_path, "source.mha")
