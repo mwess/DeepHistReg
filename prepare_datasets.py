@@ -20,6 +20,7 @@ def parse_dataset(csv_path, dataset_path, output_path, masks_path=None):
 
     csv_file = pd.read_csv(csv_path)
     for current_case in csv_file.iterrows():
+        print(f'Row {current_case[0]} of {csv_file.shape[0]}')
         current_id = current_case[1]['Unnamed: 0']
         size = current_case[1]['Image size [pixels]']
         diagonal = int(current_case[1]['Image diagonal [pixels]'])

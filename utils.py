@@ -186,6 +186,24 @@ def numpy_inv_transform(transform):
 #    else:
 #        return source, target, source_landmarks, target_landmarks, status,
 
+def load_row(row, load_masks=False):
+    source = sitk.GetArrayFromImage(sitk.ReadImage(row['source_image']))
+    target = sitk.GetArrayFromImage(sitk.ReadImage(row['target_image']))
+    if load_masks:
+        source_mask = sitk.GetArrayFromImage(sitk.ReadImage(row['source_mask']))
+        target_mask = sitk.GetArrayFromImage(sitk.ReadImage(row['target_mask']))
+    source_landmarks = pd.read_csv(row['source_landmarks']).to_numpy()[:, 1:].astype(np.float32)
+    try:
+        status = "training"
+        target_landmarks = pd.read_csv(row['target_landmarks']).to_numpy()[:, 1:].astype(np.float32)
+    except:
+        status = "evaluation"
+        target_landmarks = None
+    if load_masks:
+        return source, target, source_landmarks, target_landmarks, status, source_mask, target_mask
+    else:
+        return source, target, source_landmarks, target_landmarks, status,
+
 def load_pair(case_id, dataset_path, load_masks=False):
     base_path = os.path.join(dataset_path, str(case_id))
     source_path = os.path.join(base_path, "source.mha")

@@ -9,10 +9,10 @@ import matplotlib.pyplot as plt
 
 import SimpleITK as sitk
 
-input_path = None # ANHIR data path 
-output_path = None # Output path
+input_path = "/home/maximilw/workbench/dataset-anhir" # ANHIR data path 
+output_path = "/home/maximilw/worbench/dataset-anhir/mha" # Output path
 
-original = "ANHIR_Data" # assumes that the last folder is names "ANHIR_Data", otherwise replace
+original = "dataset-anhir" # assumes that the last folder is names "ANHIR_Data", otherwise replace
 to_replace = "ANHIR_MHA" # assumes that the last folder of the outputdata is "ANHIR_MHA", otherwise replace
 
 def run():
