@@ -425,7 +425,7 @@ def nonrigid_registration(source, target, models, params, device='cpu'):
 if __name__ == "__main__":
     # Exemplary training params
     training_params = dict()
-    training_params['epochs'] = 100
+    training_params['epochs'] = 25
     training_params['scheduler_rates'] = [0.95, 0.95, 0.95]
     training_params['num_levels'] = 3
     training_params['inner_iterations_per_level'] = [3, 3, 3]
@@ -436,11 +436,12 @@ if __name__ == "__main__":
     training_params['batch_size'] = 1
     training_params['learning_rate'] = 0.001
     training_params['initial_model_name'] = None
-    # training_params['cost_function'] = cf.ncc_losses_global
-    # training_params['cost_function_params'] = dict()
-    training_params['cost_function'] = cf.mind_loss
+    training_params['cost_function'] = cf.ncc_losses_global
+    #training_params['cost_function_params'] = dict()
+    #training_params['model_name'] = "mind_ssc_test"
+    #training_params['cost_function'] = cf.mind_loss
     training_params['cost_function_params'] = dict()
-    training_params['model_name'] = "mind_ssc_test"
+    training_params['model_name'] = "deformable_registration"
     training(training_params)
 
     # Exemplary visualization params
@@ -450,5 +451,6 @@ if __name__ == "__main__":
     registration_params['number_of_patches'] = 32
     registration_params['num_levels'] = 3
     registration_params['inner_iterations_per_level'] = [3, 3, 3]
-    registration_params['model_name'] = "mind_ssc_test"
+    #registration_params['model_name'] = "mind_ssc_test"
+    registration_params['model_name'] = "deformable_registration"
     visualization(registration_params)

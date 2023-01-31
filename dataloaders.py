@@ -38,12 +38,18 @@ class UnsupervisedLoader(utils.data.Dataset):
 
     def __getitem__(self, idx):
         row = self.table.iloc[idx]
-        source_image = row['source_image']
-        source_mask = row['source_mask']
-        target_image = row['target_image']
-        target_mask = row['target_mask']
-        source = io.imread(source_image, as_gray=True).astype(np.float32)/255.
-        target = io.imread(target_image, as_gray=True).astype(np.float32)/255.
+        source_image_path = row['source_image']
+        source_mask_path = row['source_mask']
+        target_image_path = row['target_image']
+        target_mask_path = row['target_mask']
+        source = io.imread(source_image_path, as_gray=True)
+        target = io.imread(target_image_path, as_gray=True)
+        source_mask = io.imread(source_mask_path)
+        target_mask = io.imread(target_mask_path)
+        source = nd.gaussian_filter(source, 0.75)
+        target = nd.gaussian_filter(target, 0.75)
+        source = source * source_mask
+        target = target * target_mask
         #case_id = self.all_ids[idx]
         #source_path = os.path.join(self.data_path, str(case_id), "source.mha")
         #target_path = os.path.join(self.data_path, str(case_id), "target.mha")

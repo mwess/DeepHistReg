@@ -291,7 +291,7 @@ for outer_idx, key in enumerate(cores):
         print(msg)
 
 #table.to_csv('prealignment_segm_scores.csv', index=False)
-table_name = 'prealignment_segm_scores.csv'
+table_name = 'prealignment_segm_scores3.csv'
 print(f'Writing table {table_name} to file.')
 table.to_csv(table_name, index=False)
 print(table)
