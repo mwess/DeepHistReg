@@ -23,8 +23,8 @@ import paths
 from networks import affine_network_simple as an
 
 
-training_path = None # TO DEFINE
-validation_path = None # TO DEFINE
+training_path = 'deep_hist_reg_train.csv' # TO DEFINE
+validation_path = 'deep_hist_reg_train.csv' # TO DEFINE
 models_path = paths.models_path
 figures_path = paths.figures_path
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -239,16 +239,16 @@ def affine_registration(source, target, model, device='cpu'):
 
 def run():
     training_params = dict()
-    training_params['model_name'] = None # TO DEFINE
+    training_params['model_name'] = 'affine_registration' # TO DEFINE
     training_params['num_epochs'] = 500
     training_params['batch_size'] = 1
     training_params['learning_rate'] = 0.0001
     training_params['initial_path'] = None
     training_params['decay_rate'] = 0.995
     training_params['add_noise'] = True
-    training(training_params)
+    #training(training_params)
 
-    model_name = None # TO DEFINE
+    model_name = 'affine_registration' # TO DEFINE
     visualization(model_name)
 
 
